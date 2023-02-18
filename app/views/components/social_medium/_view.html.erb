@@ -1,0 +1,28 @@
+<%= turbo_frame_tag "social_medium" do %>
+  <div id="view_social_media" class="flex justify-between w-full">
+    <div class="flex-1">
+      <h2 class="pb-2 leading-3 roboto-font font-medium text-xs">Social</h2>
+      <p class="leading-2 roboto-font font-light text-sm">
+        <% if user.has_social_media? %>
+          <ul class="flex flex-wrap">
+            <% user.social_media.each do |social| %>
+              <% next if social.url.blank? %>
+              <li class="mt-2 mr-2">
+                <%= link_to social.full_url, target: "_blank" do %>
+                  <%= image_tag "icons/#{social.kind}.svg", class: "h-5", alt: social.kind %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <span class="sub-title-color">Where else can clients get to know you? (i.e. instagram)</span>
+        <% end %>
+      </p>
+    </div>
+    <div class="flex items-start">
+    <% if local_assigns[:editable].present? %>
+      <%= link_to "Edit", profile_edit_path("social_medium"), class: "roboto-font text-blue-500 text-2xs font-normal" %>
+    <% end %>
+    </div>
+  </div>
+<% end %>

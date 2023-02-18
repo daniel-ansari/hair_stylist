@@ -1,0 +1,26 @@
+<% address ||= Address.new %>
+<% model = address.new_record? ? [local_assigns[:user], :address].compact : address %>
+<% user = local_assigns[:user].present? ? dom_id(local_assigns[:user]) : "user" %>
+<% frame = address.new_record? ? "#{user}_address" : dom_id(address) %>
+<%= turbo_stream_from model %>
+<%= turbo_frame_tag frame do %>
+  <div class="w-full">
+    <div id="view_address" class="flex justify-between w-full">
+      <div class="flex-1">
+        <h2 class="pb-2 leading-3 roboto-font font-medium text-xs">Address</h2>
+        <p class="leading-2 roboto-font font-light text-sm sub-title-color">
+          <% if Array.wrap(address.full_address).empty? %>
+          Where is your salon located?
+          <% else %>
+          <%= Array.wrap(address.full_address).join("<br/>").html_safe %>
+          <% end %>
+        </p>
+      </div>
+      <div class="flex items-start">
+        <% if local_assigns[:user] == address.user %>
+          <%= link_to "Edit", address.new_record? ? new_address_path : edit_address_path(address), class: "roboto-font text-blue-500 text-2xs font-normal" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

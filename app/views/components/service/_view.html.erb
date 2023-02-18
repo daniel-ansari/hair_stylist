@@ -1,0 +1,27 @@
+<%= turbo_frame_tag "service" do %>
+  <div class="flex justify-between">
+    <div class="flex-1">
+      <h2 class="pb-2 leading-3 roboto-font font-medium text-xs">Salon Services</h2>
+      <p class="leading-2 roboto-font font-light text-sm">
+        <% if user.has_services? %>
+          <ul class="flex flex-wrap">
+            <% user.services.each do |service| %>
+              <li class="mt-2 mr-2">
+                <span class="block px-3 py-1 border border-gray-200 rounded-full roboto-font font-light text-sm sub-title-color">
+                  <%= service.name %>
+                </span>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <span class="sub-title-color">What services do you offer? (i.e. brow shaping, color, etc)</span>
+        <% end %>
+      </p>
+    </div>
+    <div class="flex items-start">
+      <% if local_assigns[:editable].present? %>
+        <%= link_to "Edit", profile_edit_path("service"), class: "roboto-font text-blue-500 text-2xs font-normal" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

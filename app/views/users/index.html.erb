@@ -1,0 +1,149 @@
+<%= turbo_stream_from "setting" %>
+<div class="flex flex-col h-full md:flex-row" x-data="{ tab : '<%= @tab %>', submenu : '<%= @submenu %>', tabSelected: false, submenuSelected: false }">
+  <div class="relative flex-col border-r px-4 h-screen-main md:flex md:overflow-y-scroll md:w-3/12 lg:w-1/5" style="min-width: 230px" :class="{'hidden' : tabSelected, 'flex' : !tabSelected}">
+    <div class="flex-1">
+      <h1 class="py-4 mb-6 text-xl font-bold leading-tight md:text-2xl">Settings</h1>
+      <ul>
+        <li class="flex items-center rounded-xl md:px-4 h-14" :class="{'md:bg-gray-200' : tab === 'profile'}">
+          <a href="#" class="w-full flex content-center justify-between" @click.prevent="tab = 'profile'; tabSelected = !tabSelected; submenu = ''">
+            <div class="flex space-x-2">
+              <%= image_tag "icons/profile.svg", class: "w-6", alt: "" %>
+              <div class="flex-1 pl-7 md:pl-0">
+                <p class="font-semibold text-sm">Edit Profile</p>
+                <p class="text-xs font-normal text-gray-400 md:hidden">Name, Title</p>
+              </div>
+            </div>
+            <%= image_tag "icons/arrow-right.svg", class: "w-4 hidden md:block", "x-show": "tab === 'profile'", alt: "" %>
+          </a>
+        </li>
+        <li class="flex items-center rounded-xl md:px-4 h-14" :class="{'md:bg-gray-200' : tab === 'manage_account'}">
+          <a href="#" class="w-full flex content-center justify-between" @click.prevent="tab = 'manage_account'; tabSelected = !tabSelected; submenu = ''">
+            <div class="flex space-x-2">
+              <%= image_tag "icons/manage_account.svg", class: "w-6", alt: "" %>
+              <div class="flex-1 pl-7 md:pl-0">
+                <p class="font-semibold font-normal text-sm">Manage Account</p>
+                <p class="text-xs font-normal text-gray-400 md:hidden">Update Email, Change Password, Deactivate Account</p>
+              </div>
+            </div>
+            <%= image_tag "icons/arrow-right.svg", class: "w-4 hidden md:block", "x-show": "tab === 'manage_account'", alt: "" %>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <%= link_to "Got Feedback", "mailto:#{ENV.fetch("FEEDBACK_MAIL", "Salon House <hello@salonhouse.herokuapp.com>")}", target: "_blank", class: "flex items-center justify-center w-full px-4 py-2 mb-20 text-black bg-transparent rounded-xl whitespace-nowrap hover:bg-yellow-500 hover:shadow-lg bg-yellow-light" %>
+  </div>
+  <div class="px-2 pt-12 border-r md:overflow-y-scroll md:w-3/12 md:flex lg:w-1/5" style="min-width: 240px" :class="{'hidden' : submenu !== '' || !submenuSelected && !tabSelected && tab === 'profile'}">
+    <a href="#" class="w-full flex content-center justify-between md:hidden" @click.prevent="tab = 'profile'; tabSelected = !tabSelected; submenu = ''">
+      <div class="flex space-x-2 text-blue-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <div class="flex-1 pl-7 md:pl-0">
+          <p class="font-semibold text-sm text-black">Edit Profile</p>
+        </div>
+      </div>
+      <%= image_tag "icons/arrow-right.svg", class: "w-4 hidden md:block", "x-show": "tab === 'profile'", alt: "" %>
+    </a>
+    <ul class="mt-10 w-full" id="profil_submenu" x-show="tab === 'profile'">
+      <li class="flex items-center rounded-xl md:px-3 lg:px-4 h-14" :class="{'bg-blue-100' : submenu === 'name'}">
+        <a href="#" class="w-full flex items-center justify-between" @click.prevent="toggleBottomMenu(); submenu = 'name'; submenuSelected = !submenuSelected">
+          <%= image_tag "icons/update_name.svg", class: "h-6 md:hidden", alt: "" %>
+          <div class="flex-1 pl-7 md:pl-0">
+            <p class="font-semibold text-sm">Name</p>
+            <p class="text-xs roboto-font font-normal text-gray-500"><%= @user.full_name %></p>
+          </div>
+          <%= image_tag "icons/arrow-right.svg", class: "h-6", "x-show": "submenu === 'name'", alt: "" %>
+        </a>
+      </li>
+      <li class="flex items-center rounded-xl md:px-3 lg:px-4 h-14" :class="{'bg-blue-100' : submenu === 'job'}">
+        <a href="#" class="w-full flex items-center justify-between" @click.prevent="toggleBottomMenu(); submenu = 'job'; submenuSelected = !submenuSelected">
+          <%= image_tag "icons/update_job.svg", class: "h-6 md:hidden", alt: "" %>
+          <div class="flex-1 pl-7 md:pl-0">
+            <p class="font-semibold text-sm">Job Title</p>
+            <p class="text-xs roboto-font font-normal text-gray-500"><%= @user.job %></p>
+          </div>
+          <%= image_tag "icons/arrow-right.svg", class: "h-6", "x-show": "submenu === 'job'", alt: "" %>
+        </a>
+      </li>
+    </ul>
+    <ul class="mt-10 w-full" id="manage_account_submenu" x-show="tab === 'manage_account'">
+      <li class="flex items-center rounded-xl md:px-3 lg:px-4 h-14" :class="{'bg-blue-100' : submenu === 'update_email'}">
+        <a href="#" class="w-full flex items-center justify-between" @click.prevent="toggleBottomMenu(); submenu = 'update_email';submenuSelected = !submenuSelected">
+          <%= image_tag "icons/email-setting.svg", class: "h-6 md:hidden", alt: "" %>
+          <div class="flex-1 pl-7 md:pl-0">
+            <p class="font-semibold text-sm">Update Email</p>
+            <p class="text-xs roboto-font font-normal text-gray-500"><%= @user.email %></p>
+          </div>
+          <%= image_tag "icons/arrow-right.svg", class: "h-6", "x-show": "submenu === 'update_email'", alt: "" %>
+        </a>
+      </li>
+      <li class="flex items-center rounded-xl md:px-3 lg:px-4 h-14" :class="{'bg-blue-100' : submenu === 'change_password'}">
+        <a href="#" class="w-full flex items-center justify-between" @click.prevent="toggleBottomMenu(); submenu = 'change_password'; submenuSelected = !submenuSelected">
+          <%= image_tag "icons/password-lock.svg", class: "h-6 md:hidden", alt: "" %>
+          <div class="flex-1 pl-7 md:pl-0">
+            <p class="font-semibold text-sm">Change Password</p>
+            <p class="text-xs roboto-font font-normal text-gray-500">Create a new password</p>
+          </div>
+          <%= image_tag "icons/arrow-right.svg", class: "h-6", "x-show": "submenu === 'change_password'", alt: "" %>
+        </a>
+      </li>
+      <li class="flex items-center rounded-xl md:px-3 lg:px-4 h-14" :class="{'bg-blue-100' : submenu === 'deactivate'}">
+        <a href="#" class="w-full flex items-center justify-between" @click.prevent="toggleBottomMenu(); submenu = 'deactivate'; submenuSelected = !submenuSelected">
+          <%= image_tag "icons/deactivate-account.svg", class: "h-6 md:hidden", alt: "" %>
+          <div class="flex-1 pl-7 md:pl-0">
+            <p class="font-semibold text-sm">Deactivate Account</p>
+            <p class="text-xs roboto-font font-normal text-gray-500">Hide your portfolio from the web</p>
+          </div>
+          <%= image_tag "icons/arrow-right.svg", class: "h-6", "x-show": "submenu === 'deactivate'", alt: "" %>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="h-full px-2 pt-12 md:overflow-y-scroll md:w-6/12 md:flex lg:w-2/5" :class="{'hidden' : !submenuSelected && tab === 'profile'}">
+    <div class="w-full h-full md:h-auto">
+      <div class="w-full h-full" x-show="submenu !== ''">
+        <%= form_for(@user, url: profile_users_path, html: { method: :put, class: "flex flex-col h-full flex-wrap content-between md:h-auto" }) do |f| %>
+          <div class="flex-1">
+            <input type="hidden" name="tab" value="<%= @tab %>" x-value="tab" x-text="tab" x-model="tab">
+            <input type="hidden" name="submenu" value="<%= @submenu %>" x-value="submenu" x-text="submenu" x-model="submenu">
+            <%= render "devise/shared/error_messages", resource: @user %>
+            <%= render "shared/notices" %>
+            <div id="change_name" x-show="submenu === 'name'">
+              <%= render partial: "users/change_name", locals: {f: f} %>
+            </div>
+            <div id="change_job" x-show="submenu === 'job'">
+              <%= render partial: "users/change_job", locals: {f: f} %>
+            </div>
+            <div id="update_email" x-show="submenu === 'update_email'">
+              <%= render partial: "users/update_email", locals: {f: f} %>
+            </div>
+            <div id="change_password" x-show="submenu === 'change_password'">
+              <%= render partial: "users/change_password", locals: {f: f} %>
+            </div>
+            <div id="deactive_account" x-show="submenu === 'deactivate'">
+              <%= render partial: "users/deactive_account", locals: {f: f} %>
+            </div>
+          </div>
+          <div class="w-full my-4 text-right actions">
+            <%= link_to "Cancel", "#", class: "text-black text-white text-gray-500 lg:px-4 py-2 text-sm font-medium mr-4", "@click.prevent": "toggleBottomMenu(); submenuSelected = false; submenu = ''" %>
+            <%= f.submit "Save", class: "text-black text-white bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium", "x-show": "submenu !== 'deactivate'" %>
+            <%= f.submit "Save", class: "text-black text-white bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium", "x-show": "submenu === 'deactivate'", data: { confirm: 'Are you sure you want to deativate your account?' }  %>
+          </div>
+        <% end %>
+      </div>
+      <div x-show="submenu === ''">
+        <%= turbo_frame_tag "setting" do %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function toggleBottomMenu(){
+    const bottomMenu = document.getElementById('bottomMenu');
+    if (bottomMenu) {
+      const currentValue = bottomMenu.__x.$data.bottomMenu;
+      bottomMenu.__x.$data.bottomMenu = !currentValue;
+    }
+  }
+</script>

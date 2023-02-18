@@ -1,0 +1,54 @@
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v11.0&appId=<%= ENV["FB_APP_ID"] %>&autoLogAppEvents=1" nonce="8LJgEMGX"></script>
+
+<script type="application/javascript">
+  window.timeHandle = function () {
+    return {
+      formData: {
+        startTime: '',
+        endTime: ''
+      },
+      message: '',
+      errStartTime: false,
+      errEndTime: false,
+      init(startTime, endTime) {
+        this.formData.startTime = startTime
+        this.formData.endTime = endTime
+      },
+      submitData() {
+        var arrStart = this.formData.startTime.split(',');
+        var arrEnd = this.formData.endTime.split(',');
+        if (parseInt(arrStart[0]) > 12 || parseInt(arrStart[0]) < 1) {
+          this.errStartTime = true
+        } else {
+          this.errStartTime = false
+        }
+        if (parseInt(arrEnd[0]) > 12 || parseInt(arrEnd[0]) < 1) {
+          this.errEndTime = true
+        } else {
+          this.errEndTime = false
+        }
+      }
+    }
+  }
+  window.LengthOfHair = function () {
+    return {
+      lengthofHair: '',
+      init(val) {
+        this.lengthofHair = val
+      },
+      choose(val) {
+        this.lengthofHair = val
+      }
+    }
+  }
+  function time() {
+    return {
+      init(timepicker) {
+        const options = {};
+        const newTimepicker = new TimepickerUI(timepicker, options);
+        newTimepicker.create()
+      }
+    }
+  }
+</script>

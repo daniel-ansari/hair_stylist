@@ -1,0 +1,38 @@
+<style>
+  input:checked + label {
+  	border: 1px solid #3374DE;
+    position: relative;
+  }
+  input[type="radio"] + label span {
+    display: inline-block;
+    vertical-align: middle;
+    width: 45px;
+    height: 45px;
+    position: absolute;
+    top:5px;
+    left:5px;
+  }
+  input[type="radio"]:checked + label span {
+    background: url('<%= image_url("icons/checkbox-radio-sprite.svg") %>') top left no-repeat;
+  }
+</style>
+<div class="flex flex-col justify-center">
+  <div class="flex flex-col p-4">
+    <h1 class="w-full font-bold leading-tight text-lg md:text-left">Which best describes you?</h1>
+    <div class="mt-10 mb-2 md:mt-4">
+      <div class="flex flex-row">
+        <%= f.radio_button :role, "barber", checked: true, class: "hidden", ":disabled": "submenu !== 'job'" %>
+        <label for="user_role_barber" class="py-12 mb-6 mr-2 text-center border border-gray-200 rounded-2xl focus:border-blue-200 h-32 w-36">
+          <span class=""></span>
+          Barber
+        </label>
+        <%= f.radio_button :role, "hair_stylist", class: "hidden", ":disabled": "submenu !== 'job'" %>
+        <label for="user_role_hair_stylist" class="py-12 mb-6 ml-2 text-center border border-gray-200 rounded-2xl focus:border-blue-200 h-32 w-36">
+          <span class=""></span>
+          Hair Stylist
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="hidden" name="from_url" value="<%= settings_path(tab: "profile", submenu: "job") %>" :disabled="submenu !== 'job'">

@@ -1,0 +1,4 @@
+var portfolioModal = document.getElementById("portfolioModal")
+if (portfolioModal) {
+  portfolioModal.innerHTML = "<%= j render "portfolios/show", portfolio: @portfolio, editable: @editable %>";
+}

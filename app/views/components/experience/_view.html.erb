@@ -1,0 +1,21 @@
+<%= turbo_frame_tag "experience" do %>
+  <div id="view_experience" class="flex justify-between w-full">
+    <div class="flex-1">
+      <h2 class="pb-2 leading-3 roboto-font font-medium text-xs">Experience</h2>
+      <p class="leading-2 roboto-font font-light text-sm sub-title-color">
+        <% if user.has_started_at? %>
+          <span class="capitalize">
+            <%= user.distance_of_time_at_now %>
+          </span>
+        <% else %>
+          When did you start doing hair?
+        <% end %>
+      </p>
+    </div>
+    <div class="flex items-start">
+    <% if local_assigns[:editable].present? %>
+      <%= link_to "Edit", profile_edit_path("experience"), class: "roboto-font text-blue-500 text-2xs font-normal" %>
+    <% end %>
+    </div>
+  </div>
+<% end %>

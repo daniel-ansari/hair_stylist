@@ -1,0 +1,78 @@
+<div class="flex flex-col mx-auto overflow-hidden bg-white md:flex-row-reverse portfolio-info" x-data="toggleBottomMenu()" x-init="init()">
+  <div class="relative flex items-center max-w-image-portfolio">
+    <%= image_tag picture_url(portfolio.picture), class: "object-contain w-full", alt: "#{portfolio.user_first_name} Portfolio" %>
+    <div class="absolute bottom-3 right-3">
+      <%= render partial: "shared/share", locals: { 
+        share_title: portfolio.user_first_name, 
+        share_link: portfolio.url, 
+        share_desc: portfolio.description, 
+        share_image: portfolio.pictures.attached? ? url_for(picture_url(portfolio.picture)) : "" } %>
+    </div>
+  </div>
+  <div class="px-3 py-5 md:overflow-y-scroll max-w-info-portfolio">
+    <div class="hidden md:flex">
+      <% if local_assigns[:editable].present? %>
+        <%= link_to "Edit", edit_portfolio_path(portfolio), class: "px-5 py-1 text-sm text-blue-500 border border-blue-500 rounded" %>
+      <% end %>
+    </div>
+    <ul class="my-3 space-y-3 list-none">
+      <li class="p-2 border border-gray-200 rounded-md md:py-4 md:mt-3">
+        <h2 class="pb-2 leading-3 md:b-4 text-normal">Description</h2>
+        <% portfolio.description&.split(%r{\r\n}).each do |desc| %>
+          <p class="text-xs font-medium text-gray-500 md:text-sm leading-2"><%= desc %></p>
+        <% end %>
+      </li>
+      <li class="p-2 border border-gray-200 rounded-md md:py-4 md:mt-3">
+        <h2 class="pb-2 leading-3 md:b-4 text-normal">Services Provided</h2>
+        <ul class="flex flex-wrap">
+          <% portfolio.service_types.each do |service_type| %>
+            <li class="mt-2 mr-2">
+              <span class="block px-3 py-1 text-sm border border-gray-200 rounded-full">
+                <%= service_type.name %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+      <li class="p-2 border border-gray-200 rounded-md md:py-4 md:mt-3">
+        <h2 class="pb-2 leading-3 md:b-4 text-normal">Hair Type</h2>
+        <ul class="flex flex-wrap">
+          <% Array.wrap(portfolio.hair_type).each do |hair_type| %>
+            <li class="mt-2 mr-2">
+              <span class="block px-3 py-1 text-sm border border-gray-200 rounded-full">
+                <%= hair_type.humanize %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+      <li class="p-2 border border-gray-200 rounded-md md:py-4 md:mt-3">
+        <h2 class="pb-2 leading-3 md:b-4 text-normal">Hair length</h2>
+        <% if portfolio.hair_length.present? %>
+        <p class="mt-2 mr-2">
+          <span class="px-3 py-1 text-sm border border-gray-200 rounded-full"><%= portfolio.hair_length&.humanize %></span>
+        </p>
+        <% end %>
+      </li>
+    </ul>
+    <div class="flex flex-col">
+      <% if local_assigns[:editable].present? %>
+        <%= link_to "Delete", portfolio_path(portfolio), method: :delete, data: { confirm: 'Are you sure?' }, 
+          class: "block px-3 py-2 mt-4 text-sm text-center text-red-500 border md:border-none rounded-lg border-red-500" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+<script>
+  function toggleBottomMenu(){
+    return {
+      init () {
+        const bottomMenu = document.getElementById('bottomMenu');
+        if (bottomMenu) {
+          const currentValue = bottomMenu.__x.$data.bottomMenu;
+          bottomMenu.__x.$data.bottomMenu = !currentValue;
+        }
+      }
+    }
+  }
+</script>

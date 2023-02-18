@@ -1,0 +1,92 @@
+<style>
+  input + label.ediable {
+    position: relative;
+  }
+  input[type="checkbox"] + label.ediable span {
+    background: url('<%= image_url("icons/unselected-checkbox.svg") %>') no-repeat;
+    background-position-x: 10px;
+    background-position-y: 10px;
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top:0px;
+    left:0px;
+    z-index: 10;
+  }
+  input[type="checkbox"]:checked + label.ediable span {
+    background-image: url('<%= image_url("icons/selected-checkbox.svg") %>');
+  }
+</style>
+<% if user.portfolios.published.empty? %>
+  <div class="flex items-center flex-1">
+    <div class="py-12 mx-auto mb-14 md:mb-0">
+      <p class="mb-4 text-sm text-center text-gray-500">
+      <% if user == current_user %>
+        Your portfolio is empty
+      <% else %>
+        The portfolio is empty
+      <% end %>
+      </p>
+      <% if user == current_user %>
+      <% portfolio = user.portfolios.new %>
+      <% form_id = dom_id(portfolio, "pictures") %>
+      <%= form_for(portfolio, url: portfolios_path, html: { method: :post, id: form_id }) do |f| %>
+        <%= f.label :pictures do %>
+          <span class="px-4 py-2 text-indigo-500 bg-white border border-indigo-500 rounded-md hover:text-white hover:bg-indigo-500">Upload Your First Photo</span>
+          <%= f.file_field :pictures, accept: "image/*", class: "hidden", onchange: "document.getElementById('#{form_id}').submit()" %>
+          <%= f.submit "Submit", class: "hidden" %>
+        <% end %>
+      <% end %>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <div x-data="{ imgModal : false, linkable: ''}">
+    <template @img-modal.window="imgModal = true;" x-if="imgModal">
+      <div class="fixed inset-0 z-50 flex items-center justify-center w-full p-2 overflow-hidden popup h-100" style="backdrop-filter: blur(21px);background: rgba(0, 0, 0, 0.4);">
+        <div id="portfolioModal" @click.away="linkable !== '' ? linkable = '' : imgModal = ''; linkable = '';" class="max-h-full overflow-auto">
+        </div>
+      </div>
+    </template>
+  </div>
+  <%= form_for(:portfolio_pictures, url: destroy_pictures_portfolios_path, html: {method: :delete, id: id}) do |f| %>
+    <div class="grid grid-cols-2 gap-px mb-20 md:gap-1.5 md:grid-cols-3 lg:grid-cols-4">
+      <% user.portfolios.published.order(created_at: :desc).each do |portfolio| %>
+          <% if portfolio.image_url_type == "file" %>
+          <%= check_box_tag "pictures_ids[]", portfolio.picture.id, false, id: dom_id(portfolio.picture), class: "hidden checkbox", ":disabled": "!manage" %>
+          <label for="<%= dom_id(portfolio.picture) %>" :class="{ 'ediable' : manage}">
+            <span></span>
+            <%= link_to portfolio_path(portfolio), remote: true, "@click": "dispatchFunction($dispatch, manage, '#{portfolio_path(portfolio)}')", class: "cursor-pointer popup-target w-full" do %>
+                <%= image_tag thumb_url(portfolio.picture), class: "md:rounded object-cover w-full border", style: "border-color: #e0e0e0" ,":class": "{ 'filter brightness-60' : manage }", alt: "" %>
+            <% end %>
+          </label>
+          <% else %>
+          <%= check_box_tag "portfolio_ids[]", portfolio.id, false, id: dom_id(portfolio), class: "hidden checkbox", ":disabled": "!manage" %>
+          <label for="<%= dom_id(portfolio) %>" :class="{ 'ediable' : manage}">
+            <span></span>
+            <%= link_to portfolio_path(portfolio), remote: true, "@click": "dispatchFunction($dispatch, manage, '#{portfolio_path(portfolio)}')", class: "cursor-pointer popup-target w-full" do %>
+              <%= image_tag portfolio.static_image_url, class: "md:rounded object-cover w-full border", style: "border-color: #e0e0e0" ,":class": "{ 'filter brightness-60' : manage }", alt: "" %>
+            <% end %>
+          </label>
+          <% end %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+<script>
+  function dispatchFunction($dispatch, manage, url) {
+    if (manage) {
+      return false;
+    } else {
+      const w = window.innerWidth;
+      if (w <= 767) {
+        window.location = url
+        return false;
+      } else {
+        $dispatch('img-modal')
+      }
+    }
+  }
+</script>

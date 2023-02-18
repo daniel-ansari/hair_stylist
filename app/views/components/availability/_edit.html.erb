@@ -1,0 +1,86 @@
+<%= turbo_frame_tag "availability_form" do %>
+  <div id="edit_availability" class="w-full p-2 bg-gray-100">
+    <style>
+      input + label.availability {
+        position: relative;
+      }
+      input[type="checkbox"] + label.availability span {
+        background: rgba(0, 0, 0, 0.12);
+        display: inline-block;
+        vertical-align: middle;
+        position: absolute;
+        top:10px;
+        left:10px;
+        z-index: 10;
+      }
+      input[type="checkbox"]:checked + label.availability span {
+        background: url('<%= image_url("icons/selected-checkbox.svg") %>') center center no-repeat;
+      }
+      input[type="time"]::-webkit-calendar-picker-indicator {
+          background: none;
+          display:none;
+      }
+    </style>
+    <div class="py-2">
+      <h1 class="text-normal">Availability</h1>
+    </div>
+    <%= form_for(user, url: url, html: {method: :put, id: dom_id(user, "availability")}) do |f| %>
+      <%= render "devise/shared/error_messages", resource: user %>
+      <div class="w-full">
+        <% availabilities = [] %>
+        <% Availability.days.keys.each do |day_number| %>
+          <% availabilities << user.availabilities.find_or_initialize_by(day: day_number) %>
+        <% end %>
+        <div class="w-full" style="max-width: 330px">
+        <%= f.fields_for :availabilities, availabilities do |av_form|%>
+          <div class="w-full py-4 border-b" x-data="{ work : <%= av_form.object.opened.to_s %> }">
+            <div class="flex flex-row w-full">
+              <div class="w-16 h-12">
+                <%= av_form.check_box :opened, class: "hidden", "@change": "work = !work" %>
+                <%= av_form.label :opened, class: "availability" do %>
+                  <span class="w-8 h-8 rounded-full"></span>
+                <% end %>
+              </div>
+              <div class="flex flex-wrap content-center flex-1">
+                <div class="flex flex-row w-full">
+                  <p class="pr-2">
+                    <%= av_form.label :opened, class: "availability" do %>
+                      <%= av_form.object.day %>
+                      <%= av_form.text_field :day, class: "hidden" %>
+                    <% end %>
+                  </p>
+                  <p class="flex-1 text-right pr-4" x-show="!work">Not Available</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex-1">
+              <template x-if="work">
+                <div class="flex flew-row">
+                  <div class="w-14 block">
+                  </div>
+                  <div x-data="time()" x-init="init($el)">
+                    <%= av_form.text_field :open_at, value: av_form.object.open_at_in_text&.upcase || "01:00 AM", class: "w-28 timepicker-ui-input px-4 text-center roboto-font font-light text-sm rounded-lg border focus:border-gray-500 focus:outline-none autofill:bg-white leading-5 h-16" %>
+                  </div>
+                  <div class="px-2 mx-auto h-16 inline-flex items-center">-</div>              
+                  <div x-data="time()" x-init="init($el)">
+                    <%= av_form.text_field :close_at, value: av_form.object.close_at_in_text&.upcase || "01:00 AM", class: "w-28 timepicker-ui-input px-4 text-center roboto-font font-light text-sm rounded-lg border focus:border-gray-500 focus:outline-none autofill:bg-white leading-5 h-16" %>  
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        <% end %>
+        </div>
+      </div>
+      <input type="hidden" name="from_url" value="<%= from_url %>">
+      <input type="hidden" name="frame" value="availability_form">
+      <input type="hidden" name="component" value="availability">
+      <div class="pt-4 pb-2 text-right actions">
+        <%= link_to "Cancel", profile_view_path("availability_form", "availability"), class: "text-gray-500 lg:px-4 py-2 rounded-md text-sm font-medium mr-2" %>
+        <%= submit_tag "Save", class: "bg-blue-500 text-white hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+

@@ -1,0 +1,19 @@
+<%= turbo_frame_tag "education" do %>
+  <div id="view_education" class="flex justify-between w-full">
+    <div class="flex-1">
+      <h2 class="pb-2 leading-3 roboto-font font-medium text-xs">Education</h2>
+      <p class="leading-2 roboto-font font-light text-sm sub-title-color">
+        <% if user.has_education? %>
+          <%= user.education %>
+        <% else %>
+          Where did you learn to do hair?
+        <% end %>
+      </p>
+    </div>
+    <div class="flex items-start">
+    <% if local_assigns[:editable].present? %>
+      <%= link_to "Edit", profile_edit_path("education"), class: "roboto-font text-blue-500 text-2xs font-normal" %>
+    <% end %>
+    </div>
+  </div>
+<% end %>

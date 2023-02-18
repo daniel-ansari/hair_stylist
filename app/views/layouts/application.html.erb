@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= render 'shared/head' %>
+  </head>
+  <body>
+    <div class="md:h-screen wrapper">
+      <%= render "shared/header" %>
+      <div id="main" class="w-full mx-auto min-h-main max-w-screen-2xl">
+        <%= yield %>
+        <% if !user_signed_in? && action_name == "index" && controller_name == "home" %>
+        <%= render "shared/footer" %>
+        <% end %>
+      </div>
+    </div>
+    <%= render "shared/scripts" %>
+  </body>
+</html>
